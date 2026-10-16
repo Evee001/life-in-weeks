@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Life in Weeks · How much of your time is really yours</title>
+  <meta name="description" content="Adjust how long you sleep, work, commute, cook, clean and scroll, and see how much of the rest of your life is left for purposeful living.">
+  <meta name="theme-color" content="#F4F6F3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121826" media="(prefers-color-scheme: dark)">
+  <meta property="og:title" content="Life in Weeks">
+  <meta property="og:description" content="See how much of the rest of your life is left for purposeful living once sleep, work, chores and screens take their share.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/fonts/bricolage-grotesque.woff" as="font" type="font/woff" crossorigin>
+  <link rel="stylesheet" href="/src/styles.css">
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#results">Skip to results</a>
+
+  <header class="topbar">
+    <div class="wordmark" aria-label="Life in Weeks">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <rect x="2" y="2" width="9" height="9" rx="1.5" class="wm-a"/>
+        <rect x="13" y="2" width="9" height="9" rx="1.5" class="wm-a"/>
+        <rect x="2" y="13" width="9" height="9" rx="1.5" class="wm-a"/>
+        <rect x="13" y="13" width="9" height="9" rx="1.5" class="wm-b"/>
+      </svg>
+      <span>Life in Weeks</span>
+    </div>
+    <div class="topbar-actions">
+      <button type="button" class="btn btn-quiet" id="reset-btn">Reset</button>
+      <button type="button" class="btn btn-solid" id="share-btn">Copy share link</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- Headline result -->
+    <section class="summary" id="results" aria-live="polite" aria-atomic="true">
+      <p class="lede" id="lede">Of the years ahead of you, about</p>
+      <p class="headline"><span id="purposeful-years">–</span></p>
+      <p class="lede" id="tail">are free for purposeful living.</p>
+
+      <div class="overbooked" id="overbooked" role="alert" hidden></div>
+
+      <div class="daybar-wrap">
+        <div class="daybar-head">
+          <h2 class="h-small">A typical day while you're working</h2>
+          <span class="muted" id="day-free"></span>
+        </div>
+        <div class="daybar" id="daybar" role="img"></div>
+        <ul class="legend" id="day-legend"></ul>
+      </div>
+    </section>
+
+    <!-- Inputs -->
+    <section class="controls" aria-labelledby="controls-title">
+      <div class="controls-head">
+        <h2 id="controls-title">Adjust your day</h2>
+        <p class="muted">Start from a profile, then move the sliders until it looks like your life.</p>
+        <div class="presets" role="group" aria-label="Start from a profile" id="presets"></div>
+      </div>
+
+      <fieldset class="group" id="about-group">
+        <legend>About you</legend>
+        <div id="about-fields"></div>
+      </fieldset>
+
+      <div id="activity-groups"></div>
+
+      <div class="day-total" id="day-total">
+        <div class="day-total-row">
+          <span>Hours planned on a workday</span>
+          <strong id="day-total-value">–</strong>
+        </div>
+        <div class="meter"><span id="day-total-meter"></span></div>
+      </div>
+
+      <details class="add-activity" id="add-activity">
+        <summary>Add an activity</summary>
+        <form id="add-form" novalidate>
+          <label class="stack">
+            <span>Name</span>
+            <input name="name" type="text" maxlength="40" placeholder="Gaming, church, gym, side hustle…" required autocomplete="off">
+          </label>
+          <div class="add-row">
+            <label class="stack">
+              <span>Hours</span>
+              <input name="hours" type="number" min="0" max="24" step="0.25" value="1" inputmode="decimal">
+            </label>
+            <label class="stack">
+              <span>Counts as</span>
+              <select name="category">
+                <option value="drain">Time drain</option>
+                <option value="upkeep">Upkeep</option>
+                <option value="rest">Sleep &amp; rest</option>
+                <option value="work">Work &amp; commute</option>
+              </select>
+            </label>
+            <label class="stack">
+              <span>When</span>
+              <select name="schedule">
+                <option value="daily">Every day</option>
+                <option value="workdays">Workdays only</option>
+              </select>
+            </label>
+          </div>
+          <p class="form-error" id="add-error" role="alert" hidden></p>
+          <button type="submit" class="btn btn-solid">Add activity</button>
+        </form>
+      </details>
+    </section>
+
+    <!-- Detail views -->
+    <section class="details">
+      <article class="panel grid-panel" aria-labelledby="grid-title">
+        <div class="panel-head">
+          <h2 id="grid-title">Your life in weeks</h2>
+          <p class="muted">Each square is one week and each row is one year. Filled squares are behind you. The rest are grouped by where they will go.</p>
+        </div>
+        <div class="grid-body">
+          <div class="grid-wrap">
+            <canvas id="life-grid" role="img"></canvas>
+          </div>
+          <div>
+            <ul class="legend legend-grid" id="grid-legend"></ul>
+            <p class="grid-note" id="grid-note"></p>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel" aria-labelledby="breakdown-title">
+        <div class="panel-head">
+          <h2 id="breakdown-title">Where the rest of your life goes</h2>
+          <p class="muted" id="breakdown-sub"></p>
+        </div>
+        <ol class="breakdown" id="breakdown"></ol>
+      </article>
+
+      <article class="panel" aria-labelledby="reclaim-title">
+        <div class="panel-head">
+          <h2 id="reclaim-title">Take some time back</h2>
+          <p class="muted">See what happens if you cut back on time drains.</p>
+        </div>
+        <div class="reclaim">
+          <label for="reclaim-range" class="reclaim-label">Cut time drains by <strong id="reclaim-pct">30%</strong></label>
+          <input type="range" id="reclaim-range" min="0" max="100" step="5" value="30">
+          <p class="reclaim-result" id="reclaim-result"></p>
+          <button type="button" class="btn btn-outline" id="reclaim-apply">Apply to my day</button>
+        </div>
+        <ul class="insights" id="insights"></ul>
+      </article>
+
+      <details class="panel method">
+        <summary><h2>How this is calculated</h2></summary>
+        <ul>
+          <li>Years left = life expectancy minus your age. A year is 365.25 days, so leap years are counted.</li>
+          <li>Work and commute only happen on workdays, so they are averaged across the week (8 hours × 5 days ÷ 7 = 5.7 hours a day). They stop when you retire.</li>
+          <li>Everything else happens every day for the rest of your life.</li>
+          <li>Purposeful time is whatever is left of the 24 hours. It is added up separately for your working years and your retired years.</li>
+          <li>The starting hours are round averages for a working adult, not survey data. Change them to match your own week.</li>
+        </ul>
+      </details>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Built by Oladeji Victor Enoch. Your numbers stay in your browser; nothing is sent anywhere.</p>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <noscript><p class="noscript">Life in Weeks needs JavaScript to run the calculations.</p></noscript>
+</body>
+</html>

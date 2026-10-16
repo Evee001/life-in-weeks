@@ -1,0 +1,16 @@
+{
+  "name": "life-in-weeks",
+  "version": "1.0.0",
+  "description": "See how much of the rest of your life is left for purposeful living once sleep, work, chores and screens take their share.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes serve@14 . -l 3000",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "author": "Oladeji Victor Enoch",
+  "license": "MIT"
+}
